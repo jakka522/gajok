@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lyrics Player</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:black;
+  overflow:hidden;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Arial;
+}
+
+.bg{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:
+  linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.8)),
+  url("https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1200");
+  background-size:cover;
+  background-position:center;
+  filter:blur(3px);
+  transform:scale(1.1);
+}
+
+#lyrics{
+  position:relative;
+  color:white;
+  font-size:42px;
+  text-align:center;
+  width:80%;
+  line-height:1.5;
+  text-shadow:0 0 20px white;
+  transition:0.4s;
+}
+
+.show{
+  opacity:1;
+  transform:scale(1);
+}
+
+.hide{
+  opacity:0;
+  transform:scale(0.8);
+}
+
+audio{
+  position:absolute;
+  bottom:30px;
+  width:80%;
+}
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div id="lyrics" class="show">
+กดเล่นเพลง
+</div>
+
+<audio id="song" controls>
+  <source src="videoplayback.m4a" type="audio/mp4">
+</audio>
+
+<script>
+
+const lyricsData = [
+{time:0,text:"คืนนี้ไม่มีเธออยู่"},
+{time:3,text:"คืนนี้ไม่มีเธอให้กอดเลย"},
+{time:8,text:"ฉันยังคงฝันละเมออยู่"},
+{time:11,text:"ยังฝันว่ามีเธออยู่ข้างกัน"},
+{time:17,text:"ที่ชายทะเลเต้นเรากันท่ามกลางหมู่ดาว"},
+{time:20,text:"เที่ยวไปทุกที่ก็ตามประสาของหนุ่มสาว"},
+{time:24,text:"แท้จริงตัวเราหน่ะไกล"},
+{time:27,text:"แต่ใจอยู่ใกล้นิดเดียว"},
+{time:31,text:"(oh my สุดที่รัก, oh my สุดที่รัก)"},
+{time:33,text:"ค่อยค่อยไปช้าช้า"},
+{time:42,text:"เธอไม่ต้องรีบมา..."},
+{time:46,text:"แต่ว่าฉันเองจะรีบไป"},
+{time:47,text:"(oh my สุดที่รัก, oh my สุดที่รัก)"},
+{time:50,text:"เธอเหมือนกับแสงไฟ...ที่ไม่เคยจะดับ"},
+{time:54,text:"แสนไกล ก็ยังเจิดจรัส"},
+{time:60,text:"ฉันเห็นเธอเพียงคนเดียวท่ามกลางความมืดมิด"},
+{time:64,text:"ที่ทุกครั้งที่โลกฉันดูมืดหม่น"},
+{time:66,text:"เธอเหมือนกับแสงไฟ...ที่ไม่ใช่ไฟประดับ"},
+{time:71,text:"แสนไกล...ก็ยังเจิดจรัส"},
+{time:76,text:"เธอคือพลังงานที่ฉันต้องการ"},
+{time:80,text:"เธอคือไฟนำทางในยามวิกาล"},
+{time:101,text:"ฉันจะป็นดั่งลมอ่อนอ่อนที่โบกโชยมา"},
+{time:106,text:"เขาพบกับสัมผัสผิวเธอ...ในยามที่เธอโรยรา"},
+{time:110,text:"ให้รู้ว่าฉันอยู่ข้างข้าง"},
+{time:112,text:"เธออย่ากังวลนะที่รัก"},
+{time:114,text:"ขอโทษบางครั้งที่ค่อนข้างเบลอ"},
+{time:118,text:"ขอบคุณที่เตือนนะ when i get too high"},
+{time:122,text:"ตอนนี้ฉันคงไม่สนใจใคร"},
+{time:127,text:"ปล่อยตัวเองเดินเข้าไปในความมืดมน"},
+{time:131,text:"(ปล่อยตัวเองเดินเข้าไปในความมืด..)"},
+{time:133,text:"เธอเหมือนกับแสงไฟ...ที่ไม่เคยจะดับ"},
+{time:138,text:"แสนไกล ก็ยังเจิดจรัส"},
+{time:142,text:"ฉันเห็นเธอเพียงคนเดียวท่ามกลางความมืดมิด"},
+{time:146,text:"ที่ทุกครั้งที่โลกฉันดูมืดมน..."},
+{time:150,text:"เธอเหมือนกับแสงไฟ...ที่ไม่ใช่ไฟประดับ"},
+{time:155,text:"แสนไกล...ก็ยังเจิดจรัส"},
+{time:160,text:"เธอคือพลังงานที่ฉันต้องการ"},
+{time:164,text:"เธอคือไฟนำทางในยามวิกาล"},
+{time:168,text:"........."},
+{time:196,text:"เธอเหมือนกับแสงไฟ...ที่ไม่เคยจะดับ"},
+{time:201,text:"แสนไกล ก็ยังเจิดจรัส"},
+{time:206,text:"ฉันเห็นเธอเพียงคนเดียวท่ามกลางความมืดมิด"},
+{time:210,text:"ที่ทุกครั้งที่โลกฉันดูมืดหม่น..."},
+{time:213,text:"เธอเหมือนกับแสงไฟ...ที่ไม่ใช่ไฟประดับ"},
+{time:217,text:"แสนไกล...ก็ยังเจิดจรัส"},
+{time:223,text:"เธอคือพลังงานที่ฉันต้องการ"},
+{time:227,text:"เธอคือไฟนำทางในยามวิกาล"},
+{time:233,text:"YOUNGOHM MATHERFUCKER"},
+];
+
+const song = document.getElementById("song");
+const lyrics = document.getElementById("lyrics");
+
+song.addEventListener("timeupdate", () => {
+
+  const current = song.currentTime;
+
+  lyricsData.forEach((line,index)=>{
+
+    const next = lyricsData[index+1];
+
+    if(
+      current >= line.time &&
+      (!next || current < next.time)
+    ){
+
+      if(lyrics.innerText != line.text){
+
+        lyrics.className = "hide";
+
+        setTimeout(()=>{
+          lyrics.innerText = line.text;
+          lyrics.className = "show";
+        },200);
+
+      }
+
+    }
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
